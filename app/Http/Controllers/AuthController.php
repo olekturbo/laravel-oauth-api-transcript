@@ -6,20 +6,22 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            'remember_me' => 'boolean'
-        ]);
+        $validator = Validator::make($request->all(),
+            [
+                'email' => 'required|string|email',
+                'password' => 'required|string'
+            ]
+        );
 
         $credentials = request(['email', 'password']);
 
-        if(!Auth::attempt($credentials))
+        if(!Auth::attempt($credentials) || $validator->fails())
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
@@ -34,13 +36,7 @@ class AuthController extends Controller
 
         $token->save();
 
-        return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse(
-                $tokenResult->token->expires_at
-            )->toDateTimeString()
-        ]);
+        return response()->json($tokenResult->accessToken);
     }
 
     public function upload(Request $request) {
