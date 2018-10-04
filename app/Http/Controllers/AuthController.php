@@ -36,7 +36,14 @@ class AuthController extends Controller
 
         $token->save();
 
-        return response()->json($tokenResult->accessToken);
+        return response()->json([
+            'access_token' => $tokenResult->accessToken,
+            'token_type' => 'Bearer',
+            'expires_at' => Carbon::parse(
+                $tokenResult->token->expires_at
+            )->toDateTimeString(),
+            'role_id' => $user->role_id
+        ]);
     }
 
     public function upload(Request $request) {
