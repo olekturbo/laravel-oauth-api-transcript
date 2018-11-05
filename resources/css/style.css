@@ -8,6 +8,10 @@
 }
 
 .voyager .side-menu .navbar li.active {
-    background: rgb(118, 131, 143);
-    color: white;
+    background: white;
+    color: rgb(118, 131, 143);
+}
+
+.voyager .side-menu.sidebar-inverse .navbar li.active > a .icon, .app-container .content-container .side-menu .navbar-nav li.active a .title {
+    color: #6db3ff;
 }
