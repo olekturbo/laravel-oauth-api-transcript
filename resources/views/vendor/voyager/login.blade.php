@@ -88,9 +88,15 @@
 
               </form>
 
+                <a href="{{ route('register') }}"><button class="btn btn-block login-button" style="background: #550eff; margin-left: 10px">Zarejestruj się</button></a>
+
               <div style="clear:both"></div>
 
-                <p><a href="{{ route('password.request') }}">Nie pamiętasz hasła?</a></p>
+                <p><a href="{{ route('password.request') }}">Have you forgotten your password?</a></p>
+
+                @if(session()->has('register'))
+                    <span class="label label-success">{{ session('register') }}</span>
+                @endif
 
               @if(!$errors->isEmpty())
               <div class="alert alert-red">

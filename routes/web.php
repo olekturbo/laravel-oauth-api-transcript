@@ -22,4 +22,8 @@ Route::group(['prefix' => 'admin'], function () {
 
 Auth::routes();
 
+Route::get('/login', function () {
+   return redirect()->route('voyager.dashboard');
+});
+
 Route::get('/home', 'HomeController@index')->name('home');
