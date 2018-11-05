@@ -1,0 +1,13 @@
+.voyager .navbar .navbar-header .navbar-brand, .voyager .navbar.navbar-default .navbar-header .navbar-brand {
+    background: white;
+    color: black;
+}
+
+.voyager .side-menu.sidebar-inverse {
+    background: white;
+}
+
+.voyager .side-menu .navbar li.active {
+    background: rgb(118, 131, 143);
+    color: white;
+}
