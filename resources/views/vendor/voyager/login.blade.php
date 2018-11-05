@@ -88,7 +88,7 @@
 
               </form>
 
-                <a href="{{ route('register') }}"><button class="btn btn-block login-button" style="background: #550eff; margin-left: 10px">Zarejestruj się</button></a>
+                <a href="{{ route('register') }}"><button class="btn btn-block login-button" style="background: #550eff; margin-left: 10px">Register</button></a>
 
               <div style="clear:both"></div>
 
