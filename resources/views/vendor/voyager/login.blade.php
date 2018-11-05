@@ -95,7 +95,7 @@
                 <p><a href="{{ route('password.request') }}">Have you forgotten your password?</a></p>
 
                 @if(session()->has('register'))
-                    <span class="label label-success">{{ session('register') }}</span>
+                    <p style="color: #41d743">{{ session('register') }}</p>
                 @endif
 
               @if(!$errors->isEmpty())

@@ -61,6 +61,20 @@
                             </div>
                         </div>
 
+                        <div class="form-group row">
+                            <label for="licence-key" class="col-md-4 col-form-label text-md-right">{{ __('Licence Key') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="licence-key" type="text" class="form-control{{ $errors->has('licence_key') ? ' is-invalid' : '' }}" name="licence_key" value="{{ old('licence_key') }}" required>
+
+                                @if ($errors->has('licence_key'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('licence_key') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
