@@ -13,8 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('login', 'AuthController@login');
+Route::post('login', 'API\AuthController@login');
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function() {
-   Route::post('upload', 'AuthController@upload');
+   Route::post('upload', 'API\AuthController@upload');
+   Route::post('proposals', 'API\ProposalsController@store');
 });
