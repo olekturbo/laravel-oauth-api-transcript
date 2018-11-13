@@ -39,7 +39,7 @@ class ProposalsController extends Controller
 
        return response()->json([
            'message' => 'Success'
-       ]);
+       ], 200);
 
    }
 }
