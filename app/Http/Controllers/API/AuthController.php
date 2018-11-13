@@ -24,7 +24,7 @@ class AuthController extends Controller
 
         if(!Auth::attempt($credentials) || $validator->fails())
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'asd'
             ], 401);
 
         $user = $request->user();
