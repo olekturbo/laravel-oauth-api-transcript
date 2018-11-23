@@ -212,4 +212,13 @@ return [
 
     ],
 
+    /*
+   |--------------------------------------------------------------------------
+   | Speech To Text Google API
+   |--------------------------------------------------------------------------
+   */
+
+    'google_speech_to_text_api_key' => env('GOOGLE_SPEECH_TO_TEXT_API_KEY'),
+    'google_speech_to_text_project_id' => env('GOOGLE_SPEECH_TO_TEXT_PROJECT_ID')
+
 ];
