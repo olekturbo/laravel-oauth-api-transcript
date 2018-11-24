@@ -17,6 +17,7 @@ class WelcomeController extends Controller
     public function index()
     {
         $projectId = config('app.google_speech_to_text_project_id');
+        $key = config('app.google_speech_to_text_api_key');
         $speech = new SpeechClient([
             'projectId' => $projectId,
             'languageCode' => 'en_US',
@@ -31,7 +32,7 @@ class WelcomeController extends Controller
             'encoding' => $outputExtension,
             'sampleRateHertz' => 44100,
             'enableWordTimeOffsets' => true,
-            'key' => config('app.google_speech_to_text_api_key')
+            'key' => $key
         ];
 
         $format = new \FFMpeg\Format\Audio\Flac();
