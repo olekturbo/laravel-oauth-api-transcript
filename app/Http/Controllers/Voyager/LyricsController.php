@@ -88,6 +88,7 @@ class LyricsController extends VoyagerBaseController
 
         /************** GOOGLE API *************/
 
+        // Variables
         $projectId = config('app.google_speech_to_text_project_id');
         $key = config('app.google_speech_to_text_api_key');
         $language = $data->language;
@@ -104,6 +105,7 @@ class LyricsController extends VoyagerBaseController
         $disk = 'public';
 
 
+        // Options
         $options = [
             'encoding' => $outputExtension,
             'sampleRateHertz' => 44100,
@@ -111,9 +113,11 @@ class LyricsController extends VoyagerBaseController
             'key' => $key
         ];
 
+        // Format
         $format = new \FFMpeg\Format\Audio\Flac();
         $format->setAudioChannels(1);
 
+        // Convert from $inputExtension to FLAC
         FFMpeg::fromDisk($disk)
             ->open($fileDirectory . '/' . $fileName . '.' . $inputExtension)
             ->export()
@@ -121,13 +125,13 @@ class LyricsController extends VoyagerBaseController
             ->inFormat($format)
             ->save($fileDirectory . '/' . $fileName . '.' . $outputExtension);
 
+        // Get FLAC File Path
         $filePath = Storage::disk($disk)->url($fileDirectory . '/' . $fileName . '.' . $outputExtension);
-
+        // Save FLAC File Path to Database
         $data->flacPath = $fileDirectory . '/' . $fileName . '.' . $outputExtension;
 
+        // Get Translation Results
         $results = $speech->recognize(fopen($filePath, 'r'), $options);
-        $lyricsFile = fopen(storage_path() . '/app/public/' .$fileDirectory . '/' . $fileName . '.' . $lyricsExtension, "wb");
-
 
         foreach ($results as $result) {
             $alternative = $result->alternatives()[0];
@@ -140,11 +144,14 @@ class LyricsController extends VoyagerBaseController
             }
         }
 
+        // Save Lyrics File Path To Database
+        $lyricsFile = fopen(storage_path() . '/app/public/' .$fileDirectory . '/' . $fileName . '.' . $lyricsExtension, "wb");
         $xml = ArrayToXml::convert($text, 'transcript',false,'UTF-8');
         fwrite($lyricsFile, $xml);
         fclose($lyricsFile);
-
         $data->lyricsPath = $fileDirectory . '/' . $fileName . '.' . $lyricsExtension;
+
+        // Saving Data
         $data->save();
 
         // Save translations
