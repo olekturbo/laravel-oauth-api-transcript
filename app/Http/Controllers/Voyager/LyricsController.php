@@ -89,9 +89,10 @@ class LyricsController extends VoyagerBaseController
 
         $projectId = config('app.google_speech_to_text_project_id');
         $key = config('app.google_speech_to_text_api_key');
+        $language = $data->language;
         $speech = new SpeechClient([
             'projectId' => $projectId,
-            'languageCode' => 'en_US',
+            'languageCode' => $language,
         ]);
         $wholePath = json_decode($data->path)[0]->download_link;
         $inputExtension = File::extension($wholePath);
@@ -100,6 +101,7 @@ class LyricsController extends VoyagerBaseController
         $fileDirectory = File::dirname($wholePath);
         $fileName = File::name($wholePath);
         $disk = 'public';
+
 
         $options = [
             'encoding' => $outputExtension,
@@ -124,7 +126,11 @@ class LyricsController extends VoyagerBaseController
 
         $results = $speech->recognize(fopen($filePath, 'r'), $options);
 
-        $lyricsFile = fopen(storage_path() . '/app/public/' .$fileDirectory . '/' . $fileName . '.' . $lyricsExtension, "w");
+        $lyricsFile = fopen(storage_path() . '/app/public/' .$fileDirectory . '/' . $fileName . '.' . $lyricsExtension, "wb");
+
+        $utf8="\xEF\xBB\xBF"; // this is what makes the magic
+        fwrite($lyricsFile, $utf8);
+
         foreach ($results as $result) {
             $alternative = $result->alternatives()[0];
             foreach ($alternative['words'] as $wordInfo) {
