@@ -6,6 +6,7 @@ use Google\Cloud\Speech\SpeechClient;
 use Illuminate\Support\Facades\File;
 use Pbmedia\LaravelFFMpeg\FFMpegFacade as FFMpeg;
 use Illuminate\Support\Facades\Storage;
+use Spatie\ArrayToXml\ArrayToXml;
 use TCG\Voyager\Http\Controllers\VoyagerBaseController;
 
 class LyricsController extends VoyagerBaseController
@@ -97,7 +98,7 @@ class LyricsController extends VoyagerBaseController
         $wholePath = json_decode($data->path)[0]->download_link;
         $inputExtension = File::extension($wholePath);
         $outputExtension = 'flac';
-        $lyricsExtension = 'txt';
+        $lyricsExtension = 'xml';
         $fileDirectory = File::dirname($wholePath);
         $fileName = File::name($wholePath);
         $disk = 'public';
@@ -125,23 +126,22 @@ class LyricsController extends VoyagerBaseController
         $data->flacPath = $fileDirectory . '/' . $fileName . '.' . $outputExtension;
 
         $results = $speech->recognize(fopen($filePath, 'r'), $options);
-
         $lyricsFile = fopen(storage_path() . '/app/public/' .$fileDirectory . '/' . $fileName . '.' . $lyricsExtension, "wb");
 
-        $utf8="\xEF\xBB\xBF"; // this is what makes the magic
-        fwrite($lyricsFile, $utf8);
 
         foreach ($results as $result) {
             $alternative = $result->alternatives()[0];
-            foreach ($alternative['words'] as $wordInfo) {
-                $text = ([
-                    'word' => $wordInfo['word'],
+            foreach ($alternative['words'] as $i => $wordInfo) {
+                $text['word'][$i] = [
+                    'translation' => $wordInfo['word'],
                     'startTime' => $wordInfo['startTime'],
                     'endTime' => $wordInfo['endTime']
-                    ]);
-                fwrite($lyricsFile, print_r($text, TRUE));
+                    ];
             }
         }
+
+        $xml = ArrayToXml::convert($text, 'transcript',false,'UTF-8');
+        fwrite($lyricsFile, $xml);
         fclose($lyricsFile);
 
         $data->lyricsPath = $fileDirectory . '/' . $fileName . '.' . $lyricsExtension;
