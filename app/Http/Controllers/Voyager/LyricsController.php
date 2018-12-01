@@ -138,8 +138,8 @@ class LyricsController extends VoyagerBaseController
             foreach ($alternative['words'] as $i => $wordInfo) {
                 $text['word'][$i] = [
                     'translation' => $wordInfo['word'],
-                    'startTime' => $wordInfo['startTime'],
-                    'endTime' => $wordInfo['endTime']
+                    'startTime' => floatval(substr($wordInfo['startTime'], 0, -1))*1000,
+                    'endTime' => floatval(substr($wordInfo['endTime'],0,-1))*1000
                     ];
             }
         }
