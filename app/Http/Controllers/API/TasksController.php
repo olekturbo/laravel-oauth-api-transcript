@@ -32,7 +32,7 @@ class TasksController extends Controller
        $task->length = $request['mediaLength'];
        $task->name = $request['name'];
        $task->end_date = $request['endDate'];
-       $task->expected_transcription_time = $request['expected_transcription_time'];
+       $task->expected_transcription_time = $request['expectedTranscriptionTime'];
        $task->status = $request['status'];
        $task->message = $request['message'];
        $task->save();
