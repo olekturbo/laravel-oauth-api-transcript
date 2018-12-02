@@ -92,10 +92,7 @@ class LyricsController extends VoyagerBaseController
         $projectId = config('app.google_speech_to_text_project_id');
         $key = config('app.google_speech_to_text_api_key');
         $language = $data->language;
-        $speech = new SpeechClient([
-            'projectId' => $projectId,
-            'languageCode' => $language,
-        ]);
+        $speech = new SpeechClient();
         $wholePath = json_decode($data->path)[0]->download_link;
         $inputExtension = File::extension($wholePath);
         $outputExtension = 'flac';
@@ -107,6 +104,9 @@ class LyricsController extends VoyagerBaseController
 
         // Options
         $options = [
+            'projectId' => $projectId,
+            'languageCode' => $language,
+            'enableAutomaticPunctuation' => true,
             'encoding' => $outputExtension,
             'sampleRateHertz' => 44100,
             'enableWordTimeOffsets' => true,

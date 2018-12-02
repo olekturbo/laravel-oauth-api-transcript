@@ -18,4 +18,5 @@ Route::post('login', 'API\AuthController@login');
 Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function() {
    Route::post('upload', 'API\AuthController@upload');
    Route::post('proposals', 'API\ProposalsController@store');
+   Route::post('tasks', 'API\TasksController@store');
 });
