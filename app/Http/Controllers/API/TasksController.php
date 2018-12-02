@@ -42,4 +42,16 @@ class TasksController extends Controller
        ], 200);
 
    }
+
+   public function show($id) {
+       $task = Task::find($id);
+
+       return response()->json($task);
+   }
+
+   public function index() {
+       $tasks = Task::all();
+
+       return response()->json($tasks);
+   }
 }
