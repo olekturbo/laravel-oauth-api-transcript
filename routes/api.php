@@ -20,5 +20,5 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function() {
    Route::post('proposals', 'API\ProposalsController@store');
    Route::post('tasks', 'API\TasksController@store');
    Route::get('tasks', 'API\TasksController@index');
-   Route::post('task/{id}', 'API\TasksController@show');
+   Route::get('task/{id}', 'API\TasksController@show');
 });
