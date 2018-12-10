@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Voyager;
 
 use Google\Cloud\Speech\SpeechClient;
+use Google\Cloud\Translate\TranslateClient;
 use Illuminate\Support\Facades\File;
 use Pbmedia\LaravelFFMpeg\FFMpegFacade as FFMpeg;
 use Illuminate\Support\Facades\Storage;
@@ -91,7 +92,7 @@ class LyricsController extends VoyagerBaseController
         // Variables
         $projectId = config('app.google_speech_to_text_project_id');
         $key = config('app.google_speech_to_text_api_key');
-        $language = $data->language;
+        $language = explode(';',$data->language);
         $speech = new SpeechClient();
         $wholePath = json_decode($data->path)[0]->download_link;
         $inputExtension = File::extension($wholePath);
@@ -103,15 +104,25 @@ class LyricsController extends VoyagerBaseController
 
 
         // Options
-        $options = [
+        $speechToTextOptions = [
             'projectId' => $projectId,
-            'languageCode' => $language,
+            'languageCode' => $language[0],
             'enableAutomaticPunctuation' => true,
             'encoding' => $outputExtension,
             'sampleRateHertz' => 44100,
             'enableWordTimeOffsets' => true,
             'key' => $key
         ];
+
+        $translationOptions = [
+            'projectId' => $projectId,
+            'key' => $key
+        ];
+
+        $translationTarget = $language[1];
+
+        // Translation
+        $translate = new TranslateClient($translationOptions);
 
         // Format
         $format = new \FFMpeg\Format\Audio\Flac();
@@ -131,16 +142,21 @@ class LyricsController extends VoyagerBaseController
         $data->flacPath = $fileDirectory . '/' . $fileName . '.' . $outputExtension;
 
         // Get Translation Results
-        $results = $speech->recognize(fopen($filePath, 'r'), $options);
+        $results = $speech->recognize(fopen($filePath, 'r'), $speechToTextOptions);
 
         foreach ($results as $result) {
             $alternative = $result->alternatives()[0];
+            $alternative['transcript'] = $translate->translate($alternative['transcript'], ['target' => $translationTarget])['text'];
+            $exploded = explode(' ', $alternative['transcript']);
+            $filtered = array_filter($exploded, 'strlen');
             foreach ($alternative['words'] as $i => $wordInfo) {
-                $text['word'][$i] = [
-                    'translation' => $wordInfo['word'],
-                    'startTime' => floatval(substr($wordInfo['startTime'], 0, -1))*1000,
-                    'endTime' => floatval(substr($wordInfo['endTime'],0,-1))*1000
+                if(array_key_exists($i, $filtered)) {
+                    $text['word'][$i] = [
+                        'translation' => $filtered[$i],
+                        'startTime' => floatval(substr($wordInfo['startTime'], 0, -1))*1000,
+                        'endTime' => floatval(substr($wordInfo['endTime'],0,-1))*1000
                     ];
+                }
             }
         }
 

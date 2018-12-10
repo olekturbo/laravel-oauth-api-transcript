@@ -16,7 +16,7 @@ class AlterToLyricsTable extends Migration
         Schema::table('lyrics', function (Blueprint $table) {
             $table->string('flacPath')->nullable()->change();
             $table->string('lyricsPath')->nullable()->change();
-            $table->enum('language', ['pl_PL', 'en_US']);
+            $table->string('language');
         });
     }
 
