@@ -61,6 +61,18 @@ class TasksController extends Controller
    public function index() {
        $tasks = Task::all();
 
-       return response()->json($tasks);
+       foreach($tasks as $task) {
+           $json[] = [
+               'id' => $task->id,
+               'mediaLength' => $task->length,
+               'name' => $task->name,
+               'endDate' => $task->end_date,
+               'expectedTranscriptionTime' => $task->expected_transcription_time,
+               'status' => $task->status,
+               'message' => $task->message
+           ];
+       }
+
+       return response()->json($json);
    }
 }
