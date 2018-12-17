@@ -46,7 +46,16 @@ class TasksController extends Controller
    public function show($id) {
        $task = Task::find($id);
 
-       return response()->json($task);
+       $json = [
+         'mediaLength' => $task->length,
+         'name' => $task->name,
+         'endDate' => $task->end_date,
+         'expectedTranscriptionTime' => $task->expected_transcription_time,
+         'status' => $task->status,
+         'message' => $task->message
+       ];
+
+       return response()->json($json);
    }
 
    public function index() {
