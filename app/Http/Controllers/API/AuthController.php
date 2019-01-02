@@ -48,18 +48,4 @@ class AuthController extends Controller
             'login' => $user->email
         ]);
     }
-
-    public function upload(Request $request) {
-        $request->validate([
-            'video' => 'file'
-        ]);
-
-        $video      = $request->file('video');
-        $fileName   = time() . '.' . $video->getClientOriginalExtension();
-        $path = $video->getRealPath();
-
-        Storage::disk('local')->put('public/videos'.'/'.$fileName, $path, 'public');
-
-        return response()->json('File has been uploaded');
-    }
 }
