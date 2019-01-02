@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use TCG\Voyager\Models\Role;
 
 class AuthController extends Controller
 {
@@ -28,6 +29,7 @@ class AuthController extends Controller
             ], 401);
 
         $user = $request->user();
+        $role = Role::find($user->role_id);
 
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
@@ -42,7 +44,7 @@ class AuthController extends Controller
             'expirationDate' => Carbon::parse(
                 $tokenResult->token->expires_at
             )->toDateTimeString(),
-            'role' => $user->role_id,
+            'role' => $role->name,
             'login' => $user->email
         ]);
     }
