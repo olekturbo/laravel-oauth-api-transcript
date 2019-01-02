@@ -161,6 +161,10 @@ class TasksController extends VoyagerBaseController
             }
         }
 
+        $textFileName = $fileName . '.rtf';
+        Storage::disk($disk)->put($fileDirectory . '/' . $textFileName, $alternative['transcript']);
+        $data->text = $fileDirectory . '/' . $textFileName;
+
         // Save Lyrics File Path To Database
         $lyricsFile = fopen(storage_path() . '/app/public/' .$fileDirectory . '/' . $fileName . '.' . $lyricsExtension, "wb");
         $xml = ArrayToXml::convert($text, 'transcript',false,'UTF-8');
@@ -169,6 +173,11 @@ class TasksController extends VoyagerBaseController
         $data->lyrics_path = $fileDirectory . '/' . $fileName . '.' . $lyricsExtension;
 
         // Saving Data
+        $data->save();
+
+        $jsonFileName = $fileName . '.json';
+        Storage::disk($disk)->put($fileDirectory . '/' . $jsonFileName, $data->toJson());
+        $data->info = $fileDirectory . '/' . $jsonFileName;
         $data->save();
 
         // Save translations
