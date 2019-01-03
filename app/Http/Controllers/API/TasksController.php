@@ -171,7 +171,13 @@ class TasksController extends Controller
                'endDate' => $task->end_date,
                'expectedTranscriptionTime' => $task->expected_transcription_time,
                'status' => $task->status,
-               'message' => $task->message
+               'message' => $task->message,
+               'files' => [
+                   'media' => asset(json_decode($task->path)[0]->download_link),
+                   'transcription' => asset($task->lyrics_path),
+                   'taskInfo' => asset($task->info),
+                   'transcriptionText' => asset($task->text)
+               ]
            ];
        }
 
