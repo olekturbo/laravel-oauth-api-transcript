@@ -150,10 +150,10 @@ class TasksController extends Controller
          'status' => $task->status,
          'message' => $task->message,
          'files' => [
-             asset(json_decode($task->path)[0]->download_link),
-             asset($task->lyrics_path),
-             asset($task->info),
-             asset($task->text)
+             asset('storage/'.json_decode($task->path)[0]->download_link),
+             asset('storage/'.$task->lyrics_path),
+             asset('storage/'.$task->info),
+             asset('storage/'.$task->text)
          ]
        ];
 
@@ -173,10 +173,10 @@ class TasksController extends Controller
                'status' => $task->status,
                'message' => $task->message,
                'files' => [
-                   asset(json_decode($task->path)[0]->download_link),
-                   asset($task->lyrics_path),
-                   asset($task->info),
-                   asset($task->text)
+                   asset('storage/'.json_decode($task->path)[0]->download_link),
+                   asset('storage/'.$task->lyrics_path),
+                   asset('storage/'.$task->info),
+                   asset('storage/'.$task->text)
                ]
            ];
        }
