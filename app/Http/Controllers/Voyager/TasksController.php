@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Voyager;
 
+use App\Task;
 use Google\Cloud\Speech\SpeechClient;
 use Google\Cloud\Translate\TranslateClient;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Pbmedia\LaravelFFMpeg\FFMpegFacade as FFMpeg;
 use Illuminate\Support\Facades\Storage;
@@ -192,4 +194,15 @@ class TasksController extends VoyagerBaseController
         return $data;
     }
 
+    public function changeStatus($id, $status) {
+        $task = Task::find($id);
+        $task->status = $status;
+        if($status == "pending") {
+            $task->user_id = Auth::id();
+        } else {
+            $task->user_id = null;
+        }
+        $task->save();
+        return redirect()->route('voyager.tasks.index')->with(['message' => 'Status of ' . $task->name . ' has been updated!', 'alert-type' => 'success']);
+    }
 }

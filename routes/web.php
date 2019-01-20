@@ -16,6 +16,7 @@ Route::get('/', 'WelcomeController@index')->name('welcome');
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
     Route::get('/proposals/changestatus/{id}/{status}', 'Voyager\ProposalsController@changeStatus')->name('proposals.changestatus');
+    Route::get('/tasks/changestatus/{id}/{status}', 'Voyager\TasksController@changeStatus')->name('tasks.changestatus');
 });
 
 Auth::routes();
