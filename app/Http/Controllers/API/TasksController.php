@@ -204,4 +204,27 @@ class TasksController extends Controller
 
        return response()->json('Success', 200);
    }
+
+    public function close($id, Request $request) {
+        $xmlFile = $request->file('lyricsPath');
+
+        $xmlFileName   = time() . '_' . $xmlFile->getClientOriginalName();
+
+        $task = Task::find($id);
+
+        Storage::disk('public')->put('tasks/' . $xmlFileName, file_get_contents($xmlFile));
+
+        $task->lyrics_path = 'tasks/' . $xmlFileName;
+        $task->status = 'closed';
+
+        $task->save();
+
+        return response()->json('Success', 200);
+    }
+
+    public function lyrics() {
+       $lyrics = Task::all()->pluck('lyrics_path');
+
+       return response()->json($lyrics, 200);
+    }
 }
