@@ -183,4 +183,25 @@ class TasksController extends Controller
 
        return response()->json($json);
    }
+
+   public function update($id, Request $request) {
+       $textFile = $request->file('text');
+       $xmlFile = $request->file('lyricsPath');
+
+       $textFileName   = time() . '.' . $textFile->getClientOriginalName();
+       $xmlFileName   = time() . '.' . $xmlFile->getClientOriginalName();
+
+       $task = Task::find($id);
+
+       Storage::disk('public')->put('tasks/' . $textFileName, file_get_contents($textFile));
+       Storage::disk('public')->put('tasks/' . $xmlFileName, file_get_contents($xmlFile));
+
+       $task->text = 'tasks/' . $textFileName;
+       $task->lyrics_path = 'tasks/' . $xmlFileName;
+       $task->status = 'verification';
+
+       $task->save();
+
+       return response()->json('Success', 200);
+   }
 }
