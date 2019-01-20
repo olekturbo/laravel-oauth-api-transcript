@@ -188,8 +188,8 @@ class TasksController extends Controller
        $textFile = $request->file('text');
        $xmlFile = $request->file('lyricsPath');
 
-       $textFileName   = time() . '.' . $textFile->getClientOriginalName();
-       $xmlFileName   = time() . '.' . $xmlFile->getClientOriginalName();
+       $textFileName   = time() . '_' . $textFile->getClientOriginalName();
+       $xmlFileName   = time() . '_' . $xmlFile->getClientOriginalName();
 
        $task = Task::find($id);
 
