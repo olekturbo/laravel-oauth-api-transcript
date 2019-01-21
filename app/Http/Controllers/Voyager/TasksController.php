@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Voyager;
 
+use App\Notification;
 use App\Task;
+use App\User;
 use Google\Cloud\Speech\SpeechClient;
 use Google\Cloud\Translate\TranslateClient;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +13,7 @@ use Pbmedia\LaravelFFMpeg\FFMpegFacade as FFMpeg;
 use Illuminate\Support\Facades\Storage;
 use Spatie\ArrayToXml\ArrayToXml;
 use TCG\Voyager\Http\Controllers\VoyagerBaseController;
+use TCG\Voyager\Models\Role;
 
 class TasksController extends VoyagerBaseController
 {
@@ -173,6 +176,18 @@ class TasksController extends VoyagerBaseController
         fwrite($lyricsFile, $xml);
         fclose($lyricsFile);
         $data->lyrics_path = $fileDirectory . '/' . $fileName . '.' . $lyricsExtension;
+
+        $transcribentRole = Role::where('name', 'transcription')->first();
+        $transcribents = User::where('role_id', $transcribentRole->id)->get();
+
+        foreach($transcribents as $transcribent) {
+            $notification = new Notification();
+            $notification->title = "Nowe zadanie do transkrypcji!";
+            $notification->message = "Nowe zadanie zostało przesłane do transkrypcji przez użytkownika o adresie e-mail: " . Auth::user()->email . '. Nazwa zadania: ' . $task->name . '.';
+            $notification->sender = Auth::user()->email;
+            $notification->user_id = $transcribent->id;
+            $notification->save();
+        }
 
         // Saving Data
         $data->save();
