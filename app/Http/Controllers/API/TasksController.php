@@ -136,8 +136,8 @@ class TasksController extends Controller
        $task->save();
 
        return response()->json([
-           'message' => 'Success'
-       ], 200);
+           'message' => 'Sukces!'
+       ], 200)->header('Content-Type', 'application/json;charset=utf8');
 
    }
 
@@ -223,13 +223,13 @@ class TasksController extends Controller
 
        $task->save();
 
-       return response()->json('Pomyślnie wysłano zadanie.', 200);
+       return response()->json('Pomyślnie wysłano zadanie.', 200)->header('Content-Type', 'application/json;charset=utf8');
    }
 
     public function verify($id, Request $request) {
 
        if(!isset($request->verified)) {
-           return response()->json('Brak zmiennej "verified".', 400);
+           return response()->json('Brak zmiennej "verified".', 400)->header('Content-Type', 'application/json;charset=utf8');
        }
         $verified = $request->verified;
         $task = Task::find($id);
@@ -259,7 +259,7 @@ class TasksController extends Controller
 
         $task->save();
 
-        return response()->json($response, 200);
+        return response()->json($response, 200)->header('Content-Type', 'application/json;charset=utf8');
     }
 
     public function lyrics() {
