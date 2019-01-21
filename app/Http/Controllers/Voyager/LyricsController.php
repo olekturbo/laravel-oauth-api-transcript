@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Voyager;
 
+use App\Task;
 use Google\Cloud\Speech\SpeechClient;
 use Google\Cloud\Translate\TranslateClient;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Pbmedia\LaravelFFMpeg\FFMpegFacade as FFMpeg;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +14,12 @@ use TCG\Voyager\Http\Controllers\VoyagerBaseController;
 
 class LyricsController extends VoyagerBaseController
 {
+    public function index(Request $request)
+    {
+        $lyrics = Task::where('status', 'closed')->get();
+        return view('voyager.lyrics.browse', compact('lyrics'));
+    }
+
     public function insertUpdateData($request, $slug, $rows, $data)
     {
         $multi_select = [];
