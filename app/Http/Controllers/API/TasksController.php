@@ -135,9 +135,14 @@ class TasksController extends Controller
        $task->path = '['.json_encode($video_array).']';
        $task->save();
 
+       $header = array (
+           'Content-Type' => 'application/json; charset=UTF-8',
+           'charset' => 'utf-8'
+       );
+
        return response()->json([
            'message' => 'Sukces!'
-       ], 200)->header('Content-Type', 'application/json;charset=utf8');
+       ], 200, $header, JSON_UNESCAPED_UNICODE);
 
    }
 
@@ -223,13 +228,23 @@ class TasksController extends Controller
 
        $task->save();
 
-       return response()->json('Pomyślnie wysłano zadanie.', 200)->header('Content-Type', 'application/json;charset=utf8');
+       $header = array (
+           'Content-Type' => 'application/json; charset=UTF-8',
+           'charset' => 'utf-8'
+       );
+
+       return response()->json('Pomyślnie wysłano zadanie.', 200, $header, JSON_UNESCAPED_UNICODE);
    }
 
     public function verify($id, Request $request) {
 
+        $header = array (
+            'Content-Type' => 'application/json; charset=UTF-8',
+            'charset' => 'utf-8'
+        );
+
        if(!isset($request->verified)) {
-           return response()->json('Brak zmiennej "verified".', 400)->header('Content-Type', 'application/json;charset=utf8');
+           return response()->json('Brak zmiennej "verified".', 400, $header, JSON_UNESCAPED_UNICODE);
        }
         $verified = $request->verified;
         $task = Task::find($id);
@@ -259,7 +274,7 @@ class TasksController extends Controller
 
         $task->save();
 
-        return response()->json($response, 200)->header('Content-Type', 'application/json;charset=utf8');
+        return response()->json($response, 200, $header, JSON_UNESCAPED_UNICODE);
     }
 
     public function lyrics() {
