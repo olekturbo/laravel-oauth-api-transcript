@@ -326,6 +326,7 @@ class TasksController extends Controller
     public function changeStatus($id) {
        $task = Task::find($id);
        $task->status = "transcription";
+       $task->user_id = Auth::id();
        $task->save();
 
        return response()->json('Status zmieniony', 200);
