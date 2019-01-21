@@ -23,5 +23,5 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function() {
    Route::get('tasks/lyrics', 'API\TasksController@lyrics');
    Route::get('task/{id}', 'API\TasksController@show');
    Route::post('task/{id}', 'API\TasksController@update');
-   Route::post('task/close/{id}', 'API\TasksController@close');
+   Route::post('task/verify/{id}', 'API\TasksController@verify');
 });

@@ -141,6 +141,9 @@ class TasksController extends Controller
 
    public function show($id) {
        $task = Task::find($id);
+       
+       $task->status = "transcription";
+       $task->save();
 
        $json = [
          'mediaLength' => $task->length,
@@ -162,6 +165,8 @@ class TasksController extends Controller
 
    public function index() {
        $tasks = Task::all();
+
+       $json = [];
 
        foreach($tasks as $task) {
            $json[] = [
@@ -199,27 +204,49 @@ class TasksController extends Controller
        $task->text = 'tasks/' . $textFileName;
        $task->lyrics_path = 'tasks/' . $xmlFileName;
        $task->status = 'verification';
+       if($request->comment) {
+           $task->message = 'Komentarz od transkrybenta: ' . $request->comment;
+       }
 
        $task->save();
 
-       return response()->json('Success', 200);
+       return response()->json('Pomyślnie wysłano zadanie.', 200);
    }
 
-    public function close($id, Request $request) {
-        $xmlFile = $request->file('lyricsPath');
+    public function verify($id, Request $request) {
 
-        $xmlFileName   = time() . '_' . $xmlFile->getClientOriginalName();
-
+       if(!isset($request->verified)) {
+           return response()->json('Brak zmiennej "verified".', 400);
+       }
+        $verified = $request->verified;
         $task = Task::find($id);
+        $response = null;
 
-        Storage::disk('public')->put('tasks/' . $xmlFileName, file_get_contents($xmlFile));
+        if($verified) {
+            $xmlFile = $request->file('lyricsPath');
 
-        $task->lyrics_path = 'tasks/' . $xmlFileName;
-        $task->status = 'closed';
+            $xmlFileName = time() . '_' . $xmlFile->getClientOriginalName();
+
+            Storage::disk('public')->put('tasks/' . $xmlFileName, file_get_contents($xmlFile));
+
+            $task->lyrics_path = 'tasks/' . $xmlFileName;
+
+            $task->status = 'closed';
+
+            $response = 'Pomyślnie zakończono zadanie.';
+        }
+        else {
+            $task->status = 'new';
+            $response = 'Pomyślnie odrzucono zadanie.';
+        }
+
+        if($request->comment) {
+            $task->message = 'Komentarz od weryfikanta: ' . $request->comment;
+        }
 
         $task->save();
 
-        return response()->json('Success', 200);
+        return response()->json($response, 200);
     }
 
     public function lyrics() {
