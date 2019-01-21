@@ -19,7 +19,7 @@
                                 @foreach($lyrics as $lyric)
                                 <tr>
                                         <td>{{ $lyric->name }}</td>
-                                        <td><a href="storage/{{ $lyric->lyrics_path }}">Download</a></td>
+                                        <td><a href="storage/{{ asset($lyric->lyrics_path) }}">Download</a></td>
                                 </tr>
                                 @endforeach
                                 </tbody>
