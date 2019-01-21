@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Google\Cloud\Speech\SpeechClient;
@@ -12,6 +13,7 @@ use Google\Cloud\Translate\TranslateClient;
 use Illuminate\Support\Facades\File;
 use Pbmedia\LaravelFFMpeg\FFMpegFacade as FFMpeg;
 use Spatie\ArrayToXml\ArrayToXml;
+use TCG\Voyager\Models\Role;
 
 class TasksController extends Controller
 {
@@ -164,7 +166,16 @@ class TasksController extends Controller
    }
 
    public function index() {
-       $tasks = Task::all();
+       $verification_role = Role::where('name', 'verification')->first();
+       $transcription_role = Role::where('name', 'transcription')->first();
+       $admin_role = Role::where('name', 'admin')->first();
+       if(Auth::user()->role_id == $verification_role->id) {
+           $tasks = Task::where('status', 'verification')->get();
+       } else if(Auth::user()->role_id == $transcription_role->id) {
+           $tasks = Task::where('status', 'transcription')->where('user_id', Auth::id())->get();
+       } else if(Auth::user()->role_id == $admin_role->id) {
+           $tasks = Task::all();
+       }
 
        $json = [];
 
