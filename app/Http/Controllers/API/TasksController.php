@@ -172,7 +172,9 @@ class TasksController extends Controller
        if(Auth::user()->role_id == $verification_role->id) {
            $tasks = Task::where('status', 'verification')->get();
        } else if(Auth::user()->role_id == $transcription_role->id) {
-           $tasks = Task::where('status', 'transcription')->where('user_id', Auth::id())->get();
+           $first_tasks = Task::where('status', 'transcription')->where('user_id', Auth::id())->get();
+           $second_tasks = Task::where('status', 'new')->get();
+           $tasks = $first_tasks->merge($second_tasks);
        } else if(Auth::user()->role_id == $admin_role->id) {
            $tasks = Task::all();
        }
