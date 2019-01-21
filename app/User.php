@@ -33,4 +33,9 @@ class User extends \TCG\Voyager\Models\User
     {
         return $this->hasMany(Task::class);
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

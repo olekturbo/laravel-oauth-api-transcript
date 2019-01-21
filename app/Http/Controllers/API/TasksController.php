@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Notification;
 use App\Task;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -135,6 +137,18 @@ class TasksController extends Controller
        $task->path = '['.json_encode($video_array).']';
        $task->save();
 
+       $transcribentRole = Role::where('name', 'transcription')->first();
+       $transcribents = User::where('role_id', $transcribentRole->id)->get();
+
+       foreach($transcribents as $transcribent) {
+           $notification = new Notification();
+           $notification->title = "Nowe zadanie do transkrypcji!";
+           $notification->message = "Nowe zadanie zostało przesłane do transkrypcji przez użytkownika o adresie e-mail: " . Auth::user()->email . '. Nazwa zadania: ' . $task->name . '.';
+           $notification->sender = Auth::user()->email;
+           $notification->user_id = $transcribent->id;
+           $notification->save();
+       }
+
        $header = array (
            'Content-Type' => 'application/json; charset=UTF-8',
            'charset' => 'utf-8'
@@ -222,6 +236,19 @@ class TasksController extends Controller
        $task->text = 'tasks/' . $textFileName;
        $task->lyrics_path = 'tasks/' . $xmlFileName;
        $task->status = 'verification';
+
+       $verificationRole = Role::where('name', 'verification')->first();
+       $verificators = User::where('role_id', $verificationRole->id)->get();
+
+       foreach($verificators as $verificator) {
+           $notification = new Notification();
+           $notification->title = "Nowe zadanie do weryfikacji!";
+           $notification->message = "Nowe zadanie zostało przesłane do weryfikacji przez użytkownika o adresie e-mail: " . Auth::user()->email . '. Nazwa zadania: ' . $task->name . '.';
+           $notification->sender = Auth::user()->email;
+           $notification->user_id = $verificator->id;
+           $notification->save();
+       }
+
        if($request->comment) {
            $task->message = 'Komentarz od transkrybenta: ' . $request->comment;
        }
@@ -249,27 +276,40 @@ class TasksController extends Controller
         $verified = $request->verified;
         $task = Task::find($id);
         $response = null;
+        $title = null;
+        $message = null;
 
         if($verified) {
             $xmlFile = $request->file('lyricsPath');
-
             $xmlFileName = time() . '_' . $xmlFile->getClientOriginalName();
-
             Storage::disk('public')->put('tasks/' . $xmlFileName, file_get_contents($xmlFile));
-
             $task->lyrics_path = 'tasks/' . $xmlFileName;
-
             $task->status = 'closed';
-
             $response = 'Pomyślnie zakończono zadanie.';
+
+            $title = 'Zadanie zaakceptowane!';
+            $message = "Zadanie zostało zaakceptowane przez użytkownika o adresie e-mail: " . Auth::user()->email . '. Nazwa zadania: ' . $task->name . '.';
         }
         else {
             $task->status = 'new';
             $response = 'Pomyślnie odrzucono zadanie.';
+            $title = 'Zadanie odrzucone!';
+            $message = "Zadanie zostało odrzucone przez użytkownika o adresie e-mail: " . Auth::user()->email . '. Nazwa zadania: ' . $task->name . '.';
         }
 
         if($request->comment) {
             $task->message = 'Komentarz od weryfikanta: ' . $request->comment;
+        }
+
+        $users = User::all();
+
+        foreach($users as $user) {
+            $notification = new Notification();
+            $notification->title = $title;
+            $notification->message = $message;
+            $notification->sender = Auth::user()->email;
+            $notification->user_id = $user->id;
+            $notification->save();
         }
 
         $task->save();
