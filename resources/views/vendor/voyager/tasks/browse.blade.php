@@ -103,6 +103,8 @@
                                                 <span class="label label-warning">PENDING</span>
                                             @elseif($data->status === "verification")
                                                 <span class="label label-dark">VERIFICATION</span>
+                                            @elseif($data->status === "transcription")
+                                                <span class="label label-info">TRANSCRIPTION</span>
                                             @elseif($data->status === "closed")
                                                 <span class="label label-danger">CLOSED</span>
                                             @endif
