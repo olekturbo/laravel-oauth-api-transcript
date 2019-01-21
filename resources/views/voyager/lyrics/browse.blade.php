@@ -16,12 +16,12 @@
                                 </tr>
                                 </thead>
                                 <tbody>
+                                @foreach($lyrics as $lyric)
                                 <tr>
-                                    @foreach($lyrics as $lyric)
                                         <td>{{ $lyric->name }}</td>
                                         <td><a href="{{ $lyric->lyrics_path }}">Download</a></td>
-                                    @endforeach
                                 </tr>
+                                @endforeach
                                 </tbody>
                             </table>
                         </div>
