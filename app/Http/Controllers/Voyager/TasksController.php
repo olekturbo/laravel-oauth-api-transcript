@@ -220,4 +220,5 @@ class TasksController extends VoyagerBaseController
         $task->save();
         return redirect()->route('voyager.tasks.index')->with(['message' => 'Status of ' . $task->name . ' has been updated!', 'alert-type' => 'success']);
     }
+
 }

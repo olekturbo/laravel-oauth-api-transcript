@@ -322,4 +322,12 @@ class TasksController extends Controller
 
        return response()->json($lyrics, 200);
     }
+
+    public function changeStatus($id) {
+       $task = Task::find($id);
+       $task->status = "transcription";
+       $task->save();
+
+       return response()->json('Status zmieniony', 200);
+    }
 }

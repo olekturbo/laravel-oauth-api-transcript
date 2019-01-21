@@ -20,7 +20,7 @@ class NotificationsController extends Controller
                 'subject' => $notification->title,
                 'message' => $notification->message,
                 'sender' => $notification->sender,
-                'deliveryDate' => $notification->created_at->toDateString()
+                'deliveryDate' => $notification->created_at->format('d-m-Y h:i:s')
             ];
         }
 
@@ -35,7 +35,7 @@ class NotificationsController extends Controller
             'subject' => $notification->title,
             'message' => $notification->message,
             'sender' => $notification->sender,
-            'deliveryDate' => $notification->created_at->toDateString()
+            'deliveryDate' => $notification->created_at->format('d-m-Y h:i:s')
         ];
 
         return response()->json($json);

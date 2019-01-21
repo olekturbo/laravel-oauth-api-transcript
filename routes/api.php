@@ -24,6 +24,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function() {
    Route::get('task/{id}', 'API\TasksController@show');
    Route::post('task/{id}', 'API\TasksController@update');
    Route::post('task/verify/{id}', 'API\TasksController@verify');
+   Route::post('task/status/transcription/{id}', 'API\TasksController@changeStatus');
    Route::get('notifications', 'API\NotificationsController@index');
    Route::get('notification/{id}', 'API\NotificationsController@show');
    Route::post('notification/delete/{id}', 'API\NotificationsController@destroy');
