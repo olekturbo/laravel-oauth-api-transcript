@@ -177,20 +177,20 @@ class TasksController extends VoyagerBaseController
         fclose($lyricsFile);
         $data->lyrics_path = $fileDirectory . '/' . $fileName . '.' . $lyricsExtension;
 
+        // Saving Data
+        $data->save();
+
         $transcribentRole = Role::where('name', 'transcription')->first();
         $transcribents = User::where('role_id', $transcribentRole->id)->get();
 
         foreach($transcribents as $transcribent) {
             $notification = new Notification();
             $notification->title = "Nowe zadanie do transkrypcji!";
-            $notification->message = "Nowe zadanie zostało przesłane do transkrypcji przez użytkownika o adresie e-mail: " . Auth::user()->email . '. Nazwa zadania: ' . $task->name . '.';
+            $notification->message = "Nowe zadanie zostało przesłane do transkrypcji przez użytkownika o adresie e-mail: " . Auth::user()->email . '. Nazwa zadania: ' . $data->name . '.';
             $notification->sender = Auth::user()->email;
             $notification->user_id = $transcribent->id;
             $notification->save();
         }
-
-        // Saving Data
-        $data->save();
 
         $jsonFileName = $fileName . '.json';
         Storage::disk($disk)->put($fileDirectory . '/' . $jsonFileName, $data->toJson());
