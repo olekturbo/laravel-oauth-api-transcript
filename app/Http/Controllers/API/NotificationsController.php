@@ -27,6 +27,20 @@ class NotificationsController extends Controller
         return response()->json($json);
     }
 
+    public function show($id) {
+        $notification = Notification::find($id);
+
+        $json = [
+            'id' => $notification->id,
+            'subject' => $notification->title,
+            'message' => $notification->message,
+            'sender' => $notification->sender,
+            'deliveryDate' => $notification->created_at->toDateString()
+        ];
+
+        return response()->json($json);
+    }
+
     public function destroy($id) {
         $notification = Notification::find($id);
 
