@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Voyager;
 use App\Notification;
 use App\Task;
 use App\User;
-use Google\Cloud\Speech\SpeechClient;
+use Google\Cloud\Speech\V1\SpeechClient;
+use Google\Cloud\Speech\V1\RecognitionAudio;
+use Google\Cloud\Speech\V1\RecognitionConfig;
+use Google\Cloud\Speech\V1\RecognitionConfig\AudioEncoding;
 use Google\Cloud\Translate\TranslateClient;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -94,10 +97,10 @@ class TasksController extends VoyagerBaseController
 
         /************** GOOGLE API *************/
 
+        putenv('GOOGLE_APPLICATION_CREDENTIALS=' . config('app.path_to_google'));
         // Variables
         $projectId = config('app.google_speech_to_text_project_id');
         $key = config('app.google_speech_to_text_api_key');
-        $speech = new SpeechClient();
         $wholePath = json_decode($data->path)[0]->download_link;
         $inputExtension = File::extension($wholePath);
         $outputExtension = 'flac';
@@ -108,15 +111,15 @@ class TasksController extends VoyagerBaseController
 
 
         // Options
-        $speechToTextOptions = [
-            'projectId' => $projectId,
-            'languageCode' => 'en_US',
-            'enableAutomaticPunctuation' => true,
-            'encoding' => $outputExtension,
-            'sampleRateHertz' => 44100,
-            'enableWordTimeOffsets' => true,
-            'key' => $key
-        ];
+
+        $speechToTextOptions = (new RecognitionConfig())
+            ->setEncoding(AudioEncoding::FLAC)
+            ->setSampleRateHertz(44100)
+            ->setLanguageCode('en-US')
+            ->setEnableAutomaticPunctuation(true)
+            ->setEnableWordTimeOffsets(true);
+
+
 
         $translationOptions = [
             'projectId' => $projectId,
@@ -148,26 +151,43 @@ class TasksController extends VoyagerBaseController
             ->getDurationInMiliseconds();
 
         // Get Translation Results
-        $results = $speech->recognize(fopen($filePath, 'r'), $speechToTextOptions);
+        $content = file_get_contents($filePath);
+        $audio = (new RecognitionAudio())
+            ->setContent($content);
 
-        foreach ($results as $result) {
-            $alternative = $result->alternatives()[0];
-            $alternative['transcript'] = $translate->translate($alternative['transcript'], ['target' => $translationTarget])['text'];
-            $exploded = explode(' ', $alternative['transcript']);
-            $filtered = array_filter($exploded, 'strlen');
-            foreach ($alternative['words'] as $i => $wordInfo) {
-                if(array_key_exists($i, $filtered)) {
-                    $text['word'][$i] = [
-                        'translation' => $filtered[$i],
-                        'startTime' => floatval(substr($wordInfo['startTime'], 0, -1))*1000,
-                        'endTime' => floatval(substr($wordInfo['endTime'],0,-1))*1000
-                    ];
-                }
+        $client = new SpeechClient();
+        $response = $client->recognize($speechToTextOptions, $audio);
+
+
+        foreach ($response->getResults() as $result) {
+            $alternatives = $result->getAlternatives();
+            $mostLikely = $alternatives[0];
+            $translated = $translate->translate($mostLikely->getTranscript(), ['target' => $translationTarget])['text'];
+            $words = "";
+            $wordsCounter = 0;
+            $likelyCounter = 0;
+            foreach ($mostLikely->getWords() as $i => $wordInfo) {
+                    $startTimeStamp =$mostLikely->getWords()[$likelyCounter]->getStartTime()->serializeToJsonString();
+                    $words .= ' ' . $wordInfo->getWord();
+                    if(strpos($wordInfo->getWord(), '.') !== false || strpos($wordInfo->getWord(), ',') !== false) {
+                        $text['word'][$wordsCounter] = [
+                            'translation' => $translate->translate($words, ['target' => $translationTarget])['text'],
+                            'startTime' => intval(floatval(str_replace('"', '', str_replace("s", "",$startTimeStamp))) * 1000),
+                            'endTime' => intval(floatval(str_replace('"', '', str_replace("s", "", $wordInfo->getEndTime()->serializeToJsonString()))) * 1000)
+                        ];
+                        $words = "";
+                        $wordsCounter++;
+                        $likelyCounter = $i + 1;
+                    }
+
             }
         }
 
+
+        dd($text);
+
         $textFileName = $fileName . '.rtf';
-        Storage::disk($disk)->put($fileDirectory . '/' . $textFileName, $alternative['transcript']);
+        Storage::disk($disk)->put($fileDirectory . '/' . $textFileName, $translated);
         $data->text = $fileDirectory . '/' . $textFileName;
 
         // Save Lyrics File Path To Database
@@ -219,6 +239,10 @@ class TasksController extends VoyagerBaseController
         }
         $task->save();
         return redirect()->route('voyager.tasks.index')->with(['message' => 'Status of ' . $task->name . ' has been updated!', 'alert-type' => 'success']);
+    }
+
+    private function multiExplode($delimiters,$string) {
+        return explode($delimiters[0],strtr($string,array_combine(array_slice($delimiters,1),array_fill(0,count($delimiters)-1,array_shift($delimiters)))));
     }
 
 }

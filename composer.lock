@@ -1655,16 +1655,16 @@
         },
         {
             "name": "google/cloud-speech",
-            "version": "v0.18.0",
+            "version": "v0.18.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-cloud-php-speech.git",
-                "reference": "a3155743de32b5609eb8e82807595b388da30296"
+                "reference": "603efa584a8b78079c0081be4e64ba335140bc18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-speech/zipball/a3155743de32b5609eb8e82807595b388da30296",
-                "reference": "a3155743de32b5609eb8e82807595b388da30296",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php-speech/zipball/603efa584a8b78079c0081be4e64ba335140bc18",
+                "reference": "603efa584a8b78079c0081be4e64ba335140bc18",
                 "shasum": ""
             },
             "require": {
@@ -1702,7 +1702,7 @@
                 "Apache-2.0"
             ],
             "description": "Cloud Speech Client for PHP",
-            "time": "2018-11-12 23:42:54"
+            "time": "2018-11-27 19:21:13"
         },
         {
             "name": "google/cloud-storage",
@@ -1895,12 +1895,12 @@
             "version": "v3.6.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/google/protobuf.git",
-                "reference": "48cb18e5c419ddd23d9badcfe4e9df7bde1979b2"
+                "url": "https://github.com/protocolbuffers/protobuf-php.git",
+                "reference": "c39346815303f63ad295d6499e11d914c40040e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/protobuf/zipball/48cb18e5c419ddd23d9badcfe4e9df7bde1979b2",
+                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/c39346815303f63ad295d6499e11d914c40040e6",
                 "reference": "48cb18e5c419ddd23d9badcfe4e9df7bde1979b2",
                 "shasum": ""
             },
