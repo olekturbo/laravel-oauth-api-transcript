@@ -182,9 +182,7 @@ class TasksController extends VoyagerBaseController
 
             }
         }
-
-
-        dd($text);
+        
 
         $textFileName = $fileName . '.rtf';
         Storage::disk($disk)->put($fileDirectory . '/' . $textFileName, $translated);
